@@ -1,9 +1,9 @@
 import React from 'react';
-import history from './../history'
+import history from '../history'
 
-import '../style/PokemonForm.css'
+import '../style/NewPokemon.css'
 
-export default class PokemonForm extends React.Component {
+export default class NewPokemon extends React.Component {
 
     constructor(props) {
         super(props);
@@ -26,25 +26,19 @@ export default class PokemonForm extends React.Component {
 
         event.preventDefault();
 
-        let pokemon = {
-            'pokeName': this.state.pokemon.pokeName,
-            'height': this.state.pokemon.height,
-            'weight': this.state.pokemon.weight,
-            'ability': this.state.pokemon.ability
-        }
-
         fetch('http://localhost:8080/addNewPokemon', {
             method: 'POST',
-            body: JSON.stringify(pokemon),
+            body: JSON.stringify(this.state.pokemon),
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then(response => {
             if (response.ok) {
-                console.log('New Pokemon successfully added to database');
+                console.log('New Pokemon: ' + this.state.pokemon.pokeName + ' successfully added to database');
                 history.push('/pokemons')
             } else {
-                console.log('Error at fetch')
+                console.error('Error adding new pokemon to the database!');
+                alert('Pokemon already exists!');
             }
         })
     }
@@ -57,23 +51,39 @@ export default class PokemonForm extends React.Component {
 
                     <div className='form-group'>
                         <label>Pokemon Name</label>
-                        <input type='text' className='form-control form-control-lg'
-                            onChange={this.changePokemon('pokeName')} placeholder='Enter the pokemon name' />
+
+                        <input type='text'
+                            required
+                            className='form-control form-control-lg'
+                            onChange={this.changePokemon('pokeName')}
+                            placeholder='Enter the pokemon name' />
                     </div>
                     <div className='form-group'>
                         <label>Pokemon Height</label>
-                        <input type='number' className='form-control form-control-lg'
-                            onChange={this.changePokemon('height')} placeholder='Enter the pokemon height' />
+
+                        <input type='number'
+                            required
+                            className='form-control form-control-lg'
+                            onChange={this.changePokemon('height')}
+                            placeholder='Enter the pokemon height' />
                     </div>
                     <div className='form-group'>
                         <label>Pokemon Weight</label>
-                        <input type='number' className='form-control form-control-lg'
-                            onChange={this.changePokemon('weight')} placeholder='Enter the pokemon weight' />
+
+                        <input type='number'
+                            required
+                            className='form-control form-control-lg'
+                            onChange={this.changePokemon('weight')}
+                            placeholder='Enter the pokemon weight' />
                     </div>
                     <div className='form-group'>
                         <label>Pokemon Ability</label>
-                        <input type='text' className='form-control form-control-lg'
-                            onChange={this.changePokemon('ability')} placeholder='Enter the pokemon ability' />
+
+                        <input type='text'
+                            required
+                            className='form-control form-control-lg'
+                            onChange={this.changePokemon('ability')}
+                            placeholder='Enter the pokemon ability' />
                     </div>
 
                     <input className='btn btn-primary btn-lg' type='submit' value='Submit' />

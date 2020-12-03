@@ -1,6 +1,7 @@
 import React from 'react';
+import history from './../history'
 
-import "../style/PokemonTable.css"
+import '../style/PokemonTable.css'
 
 export default class PokemonTable extends React.Component {
 
@@ -12,13 +13,32 @@ export default class PokemonTable extends React.Component {
   }
 
   componentDidMount() {
-    fetch('http://localhost:8080/pokemons', { method: 'GET' })
+    fetch('http://localhost:8080/pokemons', {
+      method: 'GET'
+    })
       .then(response => response.json())
       .then(responseData => {
         this.setState({
           pokemons: responseData
         })
-      });
+      }).catch(function() {
+        console.error('Error fetching all pokemons from database!')
+      })
+  }
+
+  deletePokemon(id, pokeName) {
+    if (window.confirm('Are you sure you want to delete ' + pokeName + '?')) {
+      fetch('http://localhost:8080/deletePokemon?id=' + id, {
+        method: 'DELETE',
+      }).then(response => {
+        if (response.ok) {
+          console.log('Pokemon with id: ' + id + ' successfully deleted from the database');
+          window.location.reload();
+        } else {
+          console.error('Error deleting pokemon with ' + pokeName + ' name and ' + id + ' id!')
+        }
+      })
+    }
   }
 
   renderTableHeader() {
@@ -38,6 +58,15 @@ export default class PokemonTable extends React.Component {
           <td>{height}</td>
           <td>{weight}</td>
           <td>{ability}</td>
+          <td>
+            <button className='btn btn-primary' onClick={() => history.push({
+              pathname: '/editPokemon/' + id,
+              state: {
+                pokemon: pokemon
+              }
+              })}>Edit</button>
+            <button className='btn btn-danger' onClick={() => this.deletePokemon(id, pokeName)}>Delete</button>
+          </td>
         </tr>
       )
     })
@@ -48,7 +77,10 @@ export default class PokemonTable extends React.Component {
       <div>
         <table id='pokemons'>
           <tbody>
-            <tr>{this.renderTableHeader()}</tr>
+            <tr>
+              {this.renderTableHeader()}
+              <th>Edit/Delete</th>
+            </tr>
             {this.renderTableData()}
           </tbody>
         </table>
